@@ -13,11 +13,38 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Copyright from './Copyright'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {FormikProps, useFormik} from 'formik';
+import * as yup from 'yup';
 
 const defaultTheme = createTheme();
 
+interface TSSignInType {
+    email: string,
+    password: string;
+}
 export default function SignIn() {
+    const validationSchema = yup.object({
+    email: yup
+    .string()
+    .email('Enter a valid email')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .min(8, 'Password should be of minimum 8 characters length')
+    .required('Password is required')
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/, "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+    ),
+    });
 
+    const formik: FormikProps<TSSignInType> = useFormik<TSSignInType>({
+        initialValues:{
+            email:'',
+            password: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: ()=> {}
+    });
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -29,7 +56,7 @@ export default function SignIn() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xl">
+      <Container component="main" maxWidth="md">
         <CssBaseline />
         <Box
           sx={{
@@ -45,7 +72,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={formik.submitForm} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -53,7 +80,12 @@ export default function SignIn() {
               id="email"
               label="Email Address"
               name="email"
+              onBlur={formik.handleBlur}
+              value={formik.values.email}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
               autoComplete="email"
+              onChange={formik.handleChange}
               autoFocus
             />
             <TextField
@@ -61,9 +93,14 @@ export default function SignIn() {
               required
               fullWidth
               name="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               label="Password"
               type="password"
               id="password"
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
               autoComplete="current-password"
             />
             <FormControlLabel

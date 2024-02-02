@@ -1,5 +1,5 @@
 
-import { Container } from '@mui/material';
+import { Box } from '@mui/material';
 import { Suspense, lazy } from 'react';
 import {Route,Routes,  BrowserRouter as Router,} from 'react-router-dom';
 const SignIn = lazy(()=>import('./components/SignIn'));
@@ -12,15 +12,19 @@ function App() {
   return (
     <Router>
       <Suspense>  
-      <Container maxWidth="sm">
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+
       <Routes>
         <Route path={'/'} element={<SignIn/>} />
         <Route path={'/signup'} element={<SignUp/>} />
         <Route path={'/forgot-password'} element={<ErrorPage/>} />
         <Route path={'*'} element={<ErrorPage/>} />
       </Routes>
-      </Container>
-
+        </Box>
       </Suspense>
     </Router>
   )
