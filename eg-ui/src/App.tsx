@@ -10,13 +10,11 @@ function App() {
 
 
   return (
+        <Box sx={{
+          width:'100%'
+        }}>
     <Router>
       <Suspense>  
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
 
       <Routes>
         <Route path={'/'} element={<SignIn/>} />
@@ -24,9 +22,9 @@ function App() {
         <Route path={'/forgot-password'} element={<ErrorPage/>} />
         <Route path={'*'} element={<ErrorPage/>} />
       </Routes>
-        </Box>
       </Suspense>
     </Router>
+        </Box>
   )
 }
 
