@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -37,7 +37,7 @@ export default function SignUp() {
     .min(8, 'Password should be of minimum 8 characters length')
     .required('Password is required')
     .matches(
-      /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/, "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
     ),
     });
     const formik: FormikProps<TSSignInType> = useFormik<TSSignInType>({
@@ -48,16 +48,10 @@ export default function SignUp() {
             password: '',
         },
         validationSchema: validationSchema,
-        onSubmit: ()=> {}
+        onSubmit: (values)=> {
+          console.log(values)
+        }
     });
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>

@@ -28,12 +28,12 @@ export default function SignIn() {
     .string()
     .email('Enter a valid email')
     .required('Email is required'),
-  password: yup
+    password: yup
     .string()
     .min(8, 'Password should be of minimum 8 characters length')
     .required('Password is required')
     .matches(
-      /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/, "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
     ),
     });
 
@@ -43,16 +43,10 @@ export default function SignIn() {
             password: '',
         },
         validationSchema: validationSchema,
-        onSubmit: ()=> {}
+        onSubmit: (values)=> {
+          console.log(values);
+        }
     });
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -72,7 +66,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={formik.submitForm} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={formik.handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
