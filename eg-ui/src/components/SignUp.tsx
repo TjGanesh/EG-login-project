@@ -15,9 +15,11 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from './Copyright';
 import {FormikProps, useFormik} from 'formik';
 import * as yup from 'yup';
+import { handleSignUp, makeHashFromPassword } from '../api';
+import { SignUpType } from '../api/types';
 
 const defaultTheme = createTheme();
-interface TSSignInType {
+interface TSSignUpType {
     firstName: string,
     lastName: string,
     email: string,
@@ -40,7 +42,7 @@ export default function SignUp() {
        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
     ),
     });
-    const formik: FormikProps<TSSignInType> = useFormik<TSSignInType>({
+    const formik: FormikProps<TSSignUpType> = useFormik<TSSignUpType>({
         initialValues:{
             firstName:'',
             lastName: '',
@@ -48,8 +50,13 @@ export default function SignUp() {
             password: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values)=> {
-          console.log(values)
+        onSubmit: async(values) => {
+      const getHash = await makeHashFromPassword(values.password);
+      const payload = {
+        ...values,
+        password: getHash,
+      } as unknown as SignUpType;
+      handleSignUp(payload);
         }
     });
 
