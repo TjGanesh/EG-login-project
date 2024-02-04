@@ -8,3 +8,8 @@ export interface SignUpType {
     firstName: string;
     lastName: string;
 }
+
+export enum responseStatus {
+    SUCCESS = 'success',
+    ERROR = 'error'
+}

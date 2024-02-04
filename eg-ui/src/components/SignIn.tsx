@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { Link as NavLink } from "react-router-dom";
+import { Link as NavLink, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -16,7 +16,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { FormikProps, useFormik } from "formik";
 import * as yup from "yup";
 import { handleSignIn, makeHashFromPassword } from "../api";
-import { SignInType } from "../api/types";
+import { responseStatus, SignInType } from "../api/types";
+import Snackbar from '@mui/material/Snackbar';
+import { useState } from "react";
+
 
 const defaultTheme = createTheme();
 
@@ -25,6 +28,8 @@ interface TSSignInType {
   password: string;
 }
 export default function SignIn() {
+  const [statusBar, setStatusBar] = useState(false);
+  const navigate = useNavigate();
   const validationSchema = yup.object({
     email: yup
       .string()
@@ -52,9 +57,18 @@ export default function SignIn() {
         email: values.email,
         password: getHash,
       } as unknown as SignInType;
-      handleSignIn(payload);
+      const response = await handleSignIn(payload);
+      if (response === responseStatus.SUCCESS) {
+        navigate(`/HomePage`);
+      } else {
+        setStatusBar(true);
+      }
     },
   });
+
+  function handleClose(): void {
+    setStatusBar(false);
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -135,6 +149,14 @@ export default function SignIn() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Snackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          autoHideDuration={5000}
+          open={statusBar}
+          onClose={handleClose}
+          message="Something went wrong!, try again."
+          key={'snackBar'}
+/>
       </Container>
     </ThemeProvider>
   );
