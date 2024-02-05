@@ -1,4 +1,3 @@
-
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,20 +14,16 @@ import Copyright from "./Copyright";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { FormikProps, useFormik } from "formik";
 import * as yup from "yup";
-import { handleSignIn, makeHashFromPassword } from "../api";
+import { handleSignIn } from "../api";
 import { responseStatus, SignInType } from "../api/types";
-import Snackbar from '@mui/material/Snackbar';
+import Snackbar from "@mui/material/Snackbar";
 import { useState } from "react";
-
+import { ERROR_TEXT, SUCCESS_TEXT } from "../api/constants";
 
 const defaultTheme = createTheme();
 
-interface TSSignInType {
-  email: string;
-  password: string;
-}
 export default function SignIn() {
-  const [statusBar, setStatusBar] = useState(false);
+  const [statusBar, setStatusBar] = useState({ open: false, msg: "" });
   const navigate = useNavigate();
   const validationSchema = yup.object({
     email: yup
@@ -45,29 +40,29 @@ export default function SignIn() {
       ),
   });
 
-  const formik: FormikProps<TSSignInType> = useFormik<TSSignInType>({
+  const formik: FormikProps<SignInType> = useFormik<SignInType>({
     initialValues: {
       email: "",
       password: "",
     },
     validationSchema: validationSchema,
-    onSubmit: async(values) => {
-      const getHash = await makeHashFromPassword(values.password);
+    onSubmit: async (values) => {
       const payload = {
         email: values.email,
-        password: getHash,
+        password: values.password,
       } as unknown as SignInType;
       const response = await handleSignIn(payload);
       if (response === responseStatus.SUCCESS) {
-        navigate(`/HomePage`);
+        navigate(`/home-page`);
+        setStatusBar({ open: true, msg: SUCCESS_TEXT });
       } else {
-        setStatusBar(true);
+        setStatusBar({ open: true, msg: ERROR_TEXT });
       }
     },
   });
 
   function handleClose(): void {
-    setStatusBar(false);
+    setStatusBar({ open: false, msg: "" });
   }
 
   return (
@@ -150,13 +145,13 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
         <Snackbar
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           autoHideDuration={5000}
-          open={statusBar}
+          open={statusBar.open}
           onClose={handleClose}
-          message="Something went wrong!, try again."
-          key={'snackBar'}
-/>
+          message={statusBar.msg}
+          key={"snackBar"}
+        />
       </Container>
     </ThemeProvider>
   );
